@@ -2,6 +2,8 @@ import math
 import torch
 import torch.nn as nn
 
+from argparse import Namespace
+
 from huggingface_hub import PyTorchModelHubMixin
 
 
@@ -191,8 +193,16 @@ class AttnBlock(nn.Module):
         return x+h_
 
 
-class Model(nn.Module, PyTorchModelHubMixin):
-    def __init__(self, config):
+class Model(nn.Module,
+            PyTorchModelHubMixin,
+            coders={
+                Namespace: (
+                    lambda x: vars(x),  # Encoder: how to convert a `Namespace` to a valid jsonable value?
+                    lambda data: Namespace(**data),  # Decoder: how to reconstruct a `Namespace` from a dictionary?
+                )
+            }
+    ):
+    def __init__(self, config: Namespace):
         super().__init__()
         self.config = config
         ch, out_ch, ch_mult = config.model.ch, config.model.out_ch, tuple(config.model.ch_mult)
