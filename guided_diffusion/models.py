@@ -204,6 +204,8 @@ class Model(nn.Module,
     ):
     def __init__(self, config: Namespace):
         super().__init__()
+      
+        self.config = config
         ch, out_ch, ch_mult = config.model.ch, config.model.out_ch, tuple(config.model.ch_mult)
         num_res_blocks = config.model.num_res_blocks
         attn_resolutions = config.model.attn_resolutions
